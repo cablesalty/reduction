@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <!-- Independent header that doesn't get replaced -->
+    <header>
+        <div>
+            <h2>Example</h2>
+        </div>
+
+        <nav>
+            <a href="#" red-switch="home">Home</a>
+            <a href="#" red-switch="about">About</a>
+        </nav>
+    </header>
+
+    <main red-root></main>
+
+    <script type="module">
+        import red from "../reduction.js";
+
+        // All config parameters are optional.
+        // It's set to true now for development and demostration purposes.
+        red.config.fatalExceptions = true;          // Whether to stop the application when encountering an internal exception. Default is false.
+        red.config.displayDebugOnException = true;  // Whether to display debug information when encountering an internal exception. Default is false. Must have fatalExceptions set to true.
+        red.config.switchActivationEvent = "click"; // The event on which elements tagged with red-switch activate to switch pages. Default is "click".
+
+        red.views = {
+            home: {
+                name: "Home",              // Optional -- Sets a requestable name for this view. Default is the key of the view.
+                description: "Home page",  // Optional -- Sets a requestable description for this view. Default is undefined.
+                preload: false,            // Optional -- Whether to preload this resource or only load when the user requests it. Default is false.
+                keepInDOM: true,           // Optional -- Whether to keep the view in the DOM (and hide it) instead of completely unloading it and having to request it again. Also preserves all DOM changes. Default is true.
+                path: "./pages/home.html", // Required -- Pointer to a view (resource)
+            },
+            about: {
+                name: "About",
+                description: "About our company",
+                keepInDOM: false,
+                path: "./pages/about.html"
+            }
+        };
+
+        // If we don't want reduction to find the root element for itself automatically,
+        // we can explicitly set it. This way it keeps it 
+        // red.root = document.querySelector("main");
+
+        // Loads or reloads
+        // - Root element (if not explicitly set already)
+        // - All switches
+        // - All view's configurations (warning: doesn't unload them from DOM!)
+        red.reload();
+
+        // This function does multiple things behind the scenes.
+        // 1. Loads the requested view into DOM if it's not loaded already
+        // 2. Unloads the previous view according to its configuration
+        // 3. Reveals the requested view
+        red.switch("home");
+    </script>
+</body>
+</html>
