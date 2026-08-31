@@ -61,6 +61,35 @@
         // 2. Unloads the previous view according to its configuration
         // 3. Reveals the requested view
         red.switch("home");
+
+        // Attach a function to the onViewSwitch event
+        // This runs every time we switch to a view
+        // Also onViewLoad() exists, that runs every time a view gets loaded (including when switched)
+        // Keep in mind that this runs AFTER a switch has completed
+        // This runs any time a view switches, it doesn't matter which one.
+        red.onViewSwitch(() => {
+            // This example changes the currently active view's navbar link to blue (with the "active" class)
+            document.querySelector(`[red-switch="${red.previouslyActiveView}"]`)?.classList.remove("active");
+            document.querySelector(`[red-switch="${red.activeView}"]`).classList.add("active");
+        });
+
+        let homeVisitCounter = 0;
+        let homeButtonCounter = 0;
+
+        // This is very similar to onViewSwitch, but now you need to pass in the view's name as a parameter
+        // This runs every time "home" gets switched to. For demonstration purposes, we are going to increase a counter on the home page.
+        red.runWhenSwitched("home", () => {
+            document.getElementById("page-visittimes").innerText = ++homeVisitCounter;
+        });
+
+        // This runs every time the view is loaded into the DOM.
+        // Very useful for creating and separating page specific scripts
+        red.runWhenLoaded("home", () => {
+            homeButtonCounter = 0; // We reset the global variable every time we reload the page
+            document.getElementById("clicker").addEventListener("click", () => { // Logic for the clicker button
+                document.getElementById("btn-clicktimes").innerText = ++homeButtonCounter;
+            });
+        });
     </script>
 </body>
 </html>

@@ -13,12 +13,32 @@ const internal = {
     },
     fatalException: (message) => {
         console.error(`[reduction.js] A fatal exception occoured: ${message}`);
+        const dialog = document.createElement("dialog");
+        dialog.style.backgroundColor = "#cacaca";
+        dialog.style.padding = "10px";
+        dialog.style.margin = "auto";
+        dialog.innerHTML = `
+            <h2>A fatal exception occoured:</h2>
+            <p>"${message}"</p>
+            <br>
+            <p>For more information, check the console and refer to the documentation.</p>
+            <br>
+            <form method="dialog">
+                <button type="submit">Close</button>
+            </form>
+        `;
+        document.body.appendChild(dialog);
+        dialog.showModal();
     },
     randgen: () => {
         return (Math.random() + 1).toString(36).substring(7);
     },
     indexedViews: [],
     loadedViews: {}, // indexedViewName: DOMIdentifier
+    onViewLoadFunction: () => {},
+    onViewSwitchFunction: () => {},
+    viewScriptRunOnceMap: {},
+    viewScriptRunWhenSwitchedMap: {},
     accessView: async (indexedViewName, viewObject) => {
         internal.log(`Accessing ${viewObject.name} (${indexedViewName}) at ${viewObject.path}`);
         
@@ -30,9 +50,8 @@ const internal = {
 
             return await response.text();
         } catch (error) {
-            // TODO: Return a failed page instead of nothing
             internal.exception(`Failed to load "${indexedViewName}" from ${viewObject.path}: ${error.message}`);
-            return "";
+            return `<p>An error occoured while trying to load view: ${error.message}</p>`;
         }
     },
     loadView: async (indexedViewName, viewObject) => {
@@ -51,6 +70,11 @@ const internal = {
 
         internal.log(`Pushing ${indexedViewName} into DOM with DOMIdentifier ${DOMIdentifier}`);
         red.root.appendChild(viewContainer);
+
+        internal.onViewLoadFunction();
+        if (indexedViewName in internal.viewScriptRunOnceMap) {
+            internal.viewScriptRunOnceMap[indexedViewName]();
+        }
 
         return DOMIdentifier;
     },
@@ -103,6 +127,7 @@ const red = {
     views: {},
     activeView: "",
     activeViewObject: null,
+    previouslyActiveView: "",
     config: {
         fatalExceptions: false,
         displayDebugOnException: false,
@@ -122,6 +147,7 @@ const red = {
 
         if (!internal.indexedViews.includes(indexedViewName)) {
             internal.exception(`Tried to request a non-existent or not indexed page "${indexedViewName}"`);
+            return;
         }
 
         let DOMIdentifier;
@@ -148,9 +174,27 @@ const red = {
         
         internal.log(`Revealing "${indexedViewName}"`);
         newActiveViewObject.style.removeProperty("display");
+        red.previouslyActiveView = red.activeView;
         red.activeView = indexedViewName;
         red.activeViewObject = newActiveViewObject;
+
+        internal.onViewSwitchFunction();
+        if (indexedViewName in internal.viewScriptRunWhenSwitchedMap) {
+            internal.viewScriptRunWhenSwitchedMap[indexedViewName]();
+        }
     },
+    onViewLoad: (func) => {
+        internal.onViewLoadFunction = func;
+    },
+    onViewSwitch: (func) => {
+        internal.onViewSwitchFunction = func;
+    },
+    runWhenLoaded: (indexedViewName, func) => {
+        internal.viewScriptRunOnceMap[indexedViewName] = func;
+    },
+    runWhenSwitched: (indexedViewName, func) => {
+        internal.viewScriptRunWhenSwitchedMap[indexedViewName] = func;
+    }
 }
 
 export default red;

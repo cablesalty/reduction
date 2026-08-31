@@ -8,6 +8,12 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+code {
+    background-color: #dddddd;
+    padding: 3px 6px;
+    border-radius: 5px;
+}
+
 header {
     display: flex;
     align-items: center;
@@ -29,6 +35,10 @@ header > nav > a {
 
 header > nav > a:hover {
     text-decoration: underline;
+}
+
+header > nav > a.active {
+    color: #3e92ff;
 }
 
 main {

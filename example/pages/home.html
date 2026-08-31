@@ -1,6 +1,15 @@
-<h1>Welcome to <code>reduction.js</code>!</h1>
-<p>This is the home page of this example website. Click the "About" button in the navigation bar to find out more.</p>
+<h1>Welcome to <code>reduction.js</code></h1>
+<p>
+    This is the home page of this example website.
+    Click the "About" button in the navigation bar to find out more.
+    You have visited this page <span id="page-visittimes">0</span> time(s) since it was loaded.
+</p>
+
 <br>
-<button>Clicked: <span id="btn-clicktimes">0</span></button>
+<button id="clicker">Clicked: <span id="btn-clicktimes">0</span></button>
 <br>
-<p>If the <code>keepInDOM</code> parameter is set to true on this page, the button will not reset after switching</p>
+
+<p>
+    If the <code>keepInDOM</code> parameter is set to true on this page,
+    the button and the visit counter will not reset after switching and revisiting this page.
+</p>
