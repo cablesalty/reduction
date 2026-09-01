@@ -35,6 +35,7 @@ const internal = {
     },
     indexedViews: [],
     loadedViews: {}, // indexedViewName: DOMIdentifier
+    scannedSwitches: new WeakSet(),
     onViewLoadFunction: () => {},
     onViewSwitchFunction: () => {},
     viewScriptRunOnceMap: {},
@@ -78,7 +79,7 @@ const internal = {
 
         return DOMIdentifier;
     },
-    elementScanner: () => { // FIXME: Can reapply event listeners to switches that already have an event listener
+    elementScanner: () => {
         // Finding root element
         if (!red.root) {
             internal.log("Querying root element");
@@ -91,9 +92,12 @@ const internal = {
 
         // Finding switches
         document.querySelectorAll("[red-switch]").forEach(element => {
+            if (internal.scannedSwitches.has(element)) return;
+
             element.addEventListener(red.config.switchActivationEvent, () => {
                 red.switch(element.getAttribute("red-switch"));
             });
+            internal.scannedSwitches.add(element);
         });
     },
     viewIndexer: () => {
