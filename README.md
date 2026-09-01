@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This tool is still heavily under development, and the documentation hasn't been written yet. If you want to use and learn it right now, refer to the example website in this repository.
+
 # Reduction -- ![GitHub Release](https://img.shields.io/github/v/release/cablesalty/reduction) ![GitHub License](https://img.shields.io/github/license/cablesalty/reduction) ![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)
 Reduction is a minimal page switching library written in vanilla JavaScript designed to make Single Page Applications easily serveable with any webserver of your choice, without needing a framework.
 
