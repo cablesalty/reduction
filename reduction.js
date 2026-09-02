@@ -11,7 +11,7 @@ const internal = {
             internal.fatalException(`A regular exception has been raised up, because fatalExceptions is set to true.\nOriginal message: ${message}`)
         }
     },
-    fatalException: (message) => {
+    fatalException: (message) => { // TODO: More information on fatal exceptions
         console.error(`[reduction.js] A fatal exception occoured: ${message}`);
         const dialog = document.createElement("dialog");
         dialog.style.backgroundColor = "#cacaca";
