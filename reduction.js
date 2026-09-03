@@ -11,7 +11,7 @@ const internal = {
             internal.fatalException(`A regular exception has been raised up, because fatalExceptions is set to true.\nOriginal message: ${message}`)
         }
     },
-    fatalException: (message) => { // TODO: More information on fatal exceptions
+    fatalException: (message) => {
         console.error(`[reduction.js] A fatal exception occoured: ${message}`);
         const dialog = document.createElement("dialog");
         dialog.style.backgroundColor = "#cacaca";
@@ -39,6 +39,7 @@ const internal = {
     onViewSwitchFunction: () => {},
     viewScriptRunOnceMap: {},
     viewScriptRunWhenSwitchedMap: {},
+    switches: new Set(),
     accessView: async (indexedViewName, viewObject) => {
         internal.log(`Accessing ${viewObject.name} (${indexedViewName}) at ${viewObject.path}`);
         
@@ -76,9 +77,19 @@ const internal = {
             internal.viewScriptRunOnceMap[indexedViewName]();
         }
 
+        // Temporary implementation
+        document.querySelectorAll("[red-switch]").forEach(element => {
+            if (internal.switches.has(element)) return;
+            internal.switches.add(element);
+            internal.log("Adding event listener to " + element.innerHTML);
+            element.addEventListener(red.config.switchActivationEvent, () => {
+                red.switch(element.getAttribute("red-switch"));
+            });
+        });
+
         return DOMIdentifier;
     },
-    elementScanner: () => { // FIXME: Can reapply event listeners to switches that already have an event listener
+    elementScanner: () => {
         // Finding root element
         if (!red.root) {
             internal.log("Querying root element");
@@ -91,6 +102,8 @@ const internal = {
 
         // Finding switches
         document.querySelectorAll("[red-switch]").forEach(element => {
+            if (internal.switches.has(element)) return;
+            internal.switches.add(element);
             element.addEventListener(red.config.switchActivationEvent, () => {
                 red.switch(element.getAttribute("red-switch"));
             });
